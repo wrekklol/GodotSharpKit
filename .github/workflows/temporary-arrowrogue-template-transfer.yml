@@ -1,0 +1,28 @@
+name: Temporary ArrowRogue Android Template Transfer
+
+on:
+  push:
+    branches:
+      - ci/arrowrogue-template-transfer-20260723
+  pull_request:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+jobs:
+  resolve-url:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 10
+    steps:
+      - name: Resolve and encode fresh signed storage redirect
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASSET='https://github.com/wrekklol/GodotSharpKit/releases/download/temp-arrowrogue-template-20260723/android_debug.apk'
+          LOCATION="$(curl -sS -I "$ASSET" | tr -d '\r' | sed -n 's/^location: //Ip' | tail -1)"
+          test -n "$LOCATION"
+          printf '%s' "$LOCATION" | base64 -w0 | sed 's/^/SIGNED_URL_BASE64=/'
+          echo
