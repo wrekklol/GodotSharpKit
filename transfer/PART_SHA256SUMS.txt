@@ -1,0 +1,2 @@
+354884e441accb0a922f4c00ba267ecb36968bd7575a62da1e5383b1334482f6  transfer/android_debug.apk.part-00
+2ec7fdfbbb35c979889f94de63d90ee0b9ffede47ebc2570a669800561d71c5c  transfer/android_debug.apk.part-01

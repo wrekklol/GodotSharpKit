@@ -1,0 +1,3 @@
+cat android_debug.apk.part-00 android_debug.apk.part-01 > android_debug.apk
+Expected size: 128045261 bytes
+Expected SHA-256: 63d2deb02cab6f5fc693dfd344922072d933f412816915b06a098085bbff5b45
