@@ -16,12 +16,12 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-22.04
     timeout-minutes: 10
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TEMP_TAG: temp-arrowrogue-template-20260723
     steps:
-      - name: Resolve signed release asset URL
+      - name: Print release metadata and exact asset URLs
         shell: bash
         run: |
           set -euo pipefail
-          ASSET='https://github.com/wrekklol/GodotSharpKit/releases/download/temp-arrowrogue-template-20260723/Godot_4.8-dev1_android_debug.apk'
-          EFFECTIVE="$(curl -sS -L --fail --range 0-0 -o /dev/null -w '%{url_effective}' "$ASSET")"
-          test -n "$EFFECTIVE"
-          echo "SIGNED_URL=$EFFECTIVE"
+          gh release view "$TEMP_TAG" --repo "$GITHUB_REPOSITORY" --json url,tagName,assets
