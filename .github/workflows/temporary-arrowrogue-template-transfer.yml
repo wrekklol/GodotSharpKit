@@ -9,56 +9,19 @@ on:
       - master
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  transfer:
+  resolve-url:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-22.04
-    timeout-minutes: 90
-    env:
-      TEMP_TAG: temp-arrowrogue-template-20260723
+    timeout-minutes: 10
     steps:
-      - name: Checkout transfer branch
-        uses: actions/checkout@v4
-        with:
-          ref: ci/arrowrogue-template-transfer-20260723
-          fetch-depth: 0
-
-      - name: Extract exact Godot Android debug template
+      - name: Resolve signed release asset URL
         shell: bash
         run: |
           set -euo pipefail
-          WORK="$RUNNER_TEMP/godot-template-transfer"
-          mkdir -p "$WORK"
-          curl -sS -L --fail --retry 5 --retry-all-errors \
-            'https://github.com/godotengine/godot-builds/releases/download/4.8-dev1/Godot_v4.8-dev1_export_templates.tpz' \
-            -o "$WORK/templates.tpz"
-          unzip -qq -j "$WORK/templates.tpz" templates/android_debug.apk templates/version.txt -d "$WORK"
-          test "$(stat -c '%s' "$WORK/android_debug.apk")" = '128045261'
-          echo '63d2deb02cab6f5fc693dfd344922072d933f412816915b06a098085bbff5b45  android_debug.apk' \
-            | (cd "$WORK" && sha256sum -c -)
-          sha256sum "$WORK/android_debug.apk" > "$WORK/Godot_4.8-dev1_android_debug.apk.sha256"
-          cp "$WORK/version.txt" "$WORK/Godot_4.8-dev1_version.txt"
-
-      - name: Publish temporary prerelease assets
-        env:
-          GH_TOKEN: ${{ github.token }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          WORK="$RUNNER_TEMP/godot-template-transfer"
-          gh release delete "$TEMP_TAG" --repo "$GITHUB_REPOSITORY" --yes --cleanup-tag || true
-          gh release create "$TEMP_TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --target ci/arrowrogue-template-transfer-20260723 \
-            --title 'Temporary ArrowRogue Godot 4.8-dev1 Android template transfer' \
-            --notes 'Temporary transfer of the official Godot 4.8-dev1 Android debug template. This prerelease will be deleted after verified local reconstruction.' \
-            --prerelease
-          gh release upload "$TEMP_TAG" \
-            "$WORK/android_debug.apk#Godot_4.8-dev1_android_debug.apk" \
-            "$WORK/Godot_4.8-dev1_android_debug.apk.sha256" \
-            "$WORK/Godot_4.8-dev1_version.txt" \
-            --repo "$GITHUB_REPOSITORY" \
-            --clobber
-          gh release view "$TEMP_TAG" --repo "$GITHUB_REPOSITORY" --json url,assets
+          ASSET='https://github.com/wrekklol/GodotSharpKit/releases/download/temp-arrowrogue-template-20260723/Godot_4.8-dev1_android_debug.apk'
+          EFFECTIVE="$(curl -sS -L --fail --range 0-0 -o /dev/null -w '%{url_effective}' "$ASSET")"
+          test -n "$EFFECTIVE"
+          echo "SIGNED_URL=$EFFECTIVE"
