@@ -16,12 +16,12 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-22.04
     timeout-minutes: 10
-    env:
-      GH_TOKEN: ${{ github.token }}
-      TEMP_TAG: temp-arrowrogue-template-20260723
     steps:
-      - name: Print release metadata and exact asset URLs
+      - name: Resolve fresh signed storage redirect
         shell: bash
         run: |
           set -euo pipefail
-          gh release view "$TEMP_TAG" --repo "$GITHUB_REPOSITORY" --json url,tagName,assets
+          ASSET='https://github.com/wrekklol/GodotSharpKit/releases/download/temp-arrowrogue-template-20260723/android_debug.apk'
+          LOCATION="$(curl -sS -I "$ASSET" | tr -d '\r' | sed -n 's/^location: //Ip' | tail -1)"
+          test -n "$LOCATION"
+          echo "SIGNED_URL=$LOCATION"
