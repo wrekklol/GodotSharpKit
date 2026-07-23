@@ -17,11 +17,12 @@ jobs:
     runs-on: ubuntu-22.04
     timeout-minutes: 10
     steps:
-      - name: Resolve fresh signed storage redirect
+      - name: Resolve and encode fresh signed storage redirect
         shell: bash
         run: |
           set -euo pipefail
           ASSET='https://github.com/wrekklol/GodotSharpKit/releases/download/temp-arrowrogue-template-20260723/android_debug.apk'
           LOCATION="$(curl -sS -I "$ASSET" | tr -d '\r' | sed -n 's/^location: //Ip' | tail -1)"
           test -n "$LOCATION"
-          echo "SIGNED_URL=$LOCATION"
+          printf '%s' "$LOCATION" | base64 -w0 | sed 's/^/SIGNED_URL_BASE64=/'
+          echo
