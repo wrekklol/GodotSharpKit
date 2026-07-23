@@ -1,5 +1,6 @@
 transfer/PART_SHA256SUMS.txt 202
 transfer/RECONSTRUCT.txt 190
+transfer/SIZES.txt 0
 transfer/android_debug.apk.part-00 90000000
 transfer/android_debug.apk.part-01 38045261
 transfer/version.txt 9
